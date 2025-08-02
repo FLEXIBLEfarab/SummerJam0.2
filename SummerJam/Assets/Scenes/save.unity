@@ -270,8 +270,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1478892830}
-  offset: {x: 0, y: 2, z: -4}
-  sensitivity: 100
+  offset: {x: 0, y: 4, z: -4}
+  sensitivity: 50
   fixedPitch: 32.2
 --- !u!1 &755842501
 GameObject:

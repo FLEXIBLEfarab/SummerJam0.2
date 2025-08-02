@@ -7,10 +7,12 @@ public class PlayerWalk : MonoBehaviour
     private InputSystem_Actions _inputActions;
     private Rigidbody _rigidbody;
 
-    public float speed = 5f;
+    public float walkSpeed = 5f;
+    public float sprintSpeed = 10f;
     public float jumpForce = 5f;
 
     private bool _isGrounded;
+    private bool _isSprinting;
 
     private void Awake()
     {
@@ -31,6 +33,7 @@ public class PlayerWalk : MonoBehaviour
 
     private void Update()
     {
+        SprintCheck(); // РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°Р¶Р°С‚С‹Р№ Shift
         Move();
     }
 
@@ -38,11 +41,20 @@ public class PlayerWalk : MonoBehaviour
     {
         Vector2 input = _inputActions.Player.Move.ReadValue<Vector2>();
 
-        // Движение относительно направления, куда смотрит игрок
-        Vector3 move = (transform.forward * input.y + transform.right * input.x) * speed;
+        // Р’С‹Р±РёСЂР°РµРј С‚РµРєСѓС‰СѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ (СЃРїСЂРёРЅС‚ РёР»Рё РѕР±С‹С‡РЅР°СЏ С…РѕРґСЊР±Р°)
+        float currentSpeed = _isSprinting ? sprintSpeed : walkSpeed;
 
-        // Используем velocity вместо linearVelocity (если linearVelocity у тебя не поддерживается)
+        // Р”РІРёР¶РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ РёРіСЂРѕРєР°
+        Vector3 move = (transform.forward * input.y + transform.right * input.x) * currentSpeed;
+
+        // РџСЂРёРјРµРЅСЏРµРј РґРІРёР¶РµРЅРёРµ (РѕСЃС‚Р°РІР»СЏРµРј Y-РєРѕРјРїРѕРЅРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё)
         _rigidbody.linearVelocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
+    }
+
+    private void SprintCheck()
+    {
+        // РџСЂРѕРІРµСЂСЏРµРј Р·Р°Р¶Р°С‚ Р»Рё Р»РµРІС‹Р№ Shift
+        _isSprinting = Keyboard.current.leftShiftKey.isPressed;
     }
 
     private void Jump()
