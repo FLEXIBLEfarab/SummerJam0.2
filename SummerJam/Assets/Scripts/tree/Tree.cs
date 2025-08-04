@@ -5,15 +5,19 @@ public class Tree : MonoBehaviour
     public bool isDead = true;
     public int healAmount = 20;
 
-    public Mesh deadMesh;   // Модель сухого дерева
-    public Mesh aliveMesh;  // Модель живого дерева
+    public Mesh deadMesh;
+    public Mesh aliveMesh;
 
     private MeshFilter meshFilter;
+    private MessageUI messageUI;
 
     void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
-        meshFilter.mesh = deadMesh; // Изначально сухое дерево
+        meshFilter.mesh = deadMesh;
+
+        // Находим компонент MessageUI в сцене
+        messageUI = FindObjectOfType<MessageUI>();
     }
 
     public void ReviveTree(PlayerHealth player)
@@ -26,7 +30,11 @@ public class Tree : MonoBehaviour
             // Меняем модель дерева
             meshFilter.mesh = aliveMesh;
 
-            Debug.Log("Дерево ожило и поменяло модель!");
+            // Показываем сообщение перед экраном
+            if (messageUI != null)
+            {
+                messageUI.ShowMessage("Дерево ожило и вылечило тебя!");
+            }
         }
     }
 }
