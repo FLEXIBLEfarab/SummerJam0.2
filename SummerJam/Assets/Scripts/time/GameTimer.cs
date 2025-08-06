@@ -1,6 +1,7 @@
 using UnityEngine;
-using TMPro; // для TextMeshPro
+using TMPro;
 using System;
+using UnityEngine.SceneManagement; // Для перезагрузки сцены
 
 public class GameTimer : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class GameTimer : MonoBehaviour
     public float startTime = 60f;    // Стартовое время
     public bool useMinutesFormat = false; // Отображать в формате ММ:СС
 
+    [Header("Game Over Settings")]
+    public float gameOverDisplayTime = 5f; // Время показа надписи перед перезагрузкой
+
     private float _currentTime;
     private bool _isRed = false;
     private float _blinkInterval = 0.5f;
@@ -20,7 +24,6 @@ public class GameTimer : MonoBehaviour
     private bool _hasMoved = false;
     private bool _isPaused = false;
 
-    // События (опционально, если хотите подписываться в других скриптах)
     public event Action OnLowTime;
     public event Action OnGameOver;
 
@@ -53,10 +56,9 @@ public class GameTimer : MonoBehaviour
                 if (_currentTime <= 10f && !_hasMoved)
                 {
                     RectTransform rt = timerText.GetComponent<RectTransform>();
-                    rt.anchoredPosition = new Vector2(90.9f, -27.89999f); // Новая позиция UI текста
+                    rt.anchoredPosition = new Vector2(90.9f, -27.89999f);
                     _hasMoved = true;
                 }
-
             }
         }
         else
@@ -86,7 +88,17 @@ public class GameTimer : MonoBehaviour
         timerText.text = "0";
         timerText.color = Color.red;
         gameOverText.gameObject.SetActive(true);
+
         OnGameOver?.Invoke();
+
+        // Запускаем корутину для ожидания и перезагрузки сцены
+        StartCoroutine(RestartAfterDelay());
+    }
+
+    System.Collections.IEnumerator RestartAfterDelay()
+    {
+        yield return new WaitForSeconds(gameOverDisplayTime);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Перезагрузка текущей сцены
     }
 
     public void ResetTimer()
